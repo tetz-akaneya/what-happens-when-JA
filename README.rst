@@ -109,49 +109,37 @@ hWndに割り当てられたWindowProcと呼ばれるメインのメッセージ
 その文字を受け取ったウィンドウのグラフィカルAPIは、適切な文字を適切なフィールドに表示します。
 
 URLをパースする
+---------
 
 ブラウザはURL(Uniform Resource Locator)から次の情報を得ることができます。
 
-Protocol "http"
-Use 'Hyper Text Transfer Protocol'
-プロトコルは"Hyper Text Transfer Protocol"を使う
-Resource "/"
-Retrieve main (index) page
-メインページを取りに行く
-Is it a URL or a search term?
-これはURLか？検索単語か？
-プロトコルがない、あるいは有効なドメインでない場合、ブラウザは入力されたテキストをブラウザのデフォルトの検索エンジンに渡します。
+    - ``Protocol``  "http"
+        プロトコルは"Hyper Text Transfer Protocol"を使う
+    - ``Resource``  "/"
+        メイン(インデックス)ページを取りに行く
 
-多くの場合、URLは特別なテキストが追加されるので、サーチエンジンはそのテキストがどのブラウザのURLバーから来たものなのかを知ることができます。
+URLか？単語か？
+-----------------------------
 
-Convert non-ASCII Unicode characters in hostname
+プロトコルがない、あるいは有効なドメインでない場合、ブラウザは入力されたテキストをブラウザのデフォルトの検索エンジンに渡します。多くの場合、URLは特別なテキストが追加されるので、サーチエンジンはそのテキストがどのブラウザのURLバーから来たものなのかを知ることができます。
+
 ホストネームに含まれるASCIIユニコード文字でない文字を変換する
+------------------------------------------------
 
-ブラウザはホストネームの文字の中に「a-z, A-Z, 0-9, -, .」以外の文字がないか調べます。
+* ブラウザはホストネームの文字の中に「a-z, A-Z, 0-9, -, .」以外の文字がないか調べます。
+* 今回の場合ホストネームは"google.com"なのでそういった文字はありませんが、もしある場合にはURLのホストネーム部分に `Punycode`_ エンコーディングを適用します。
 
-Check HSTS list
-今回の場合ホストネームは"google.com"なのでそういった文字はありませんが、もしある場合にはURLのホストネーム部分にPunycodeエンコーディングを適用します。
 
-The browser checks its "preloaded HSTS (HTTP Strict Transport Security)" list.
-ブラウザは"preloaded HSTS(HTTP Strict Transport Security)"リストを調べます。
+HSTSリストを調べる
+--------------------
 
-This is a list of websites that have requested to be contacted via HTTPS only.
-これはHTTPSでのみリクエストを送るように求めているウェブサイトの一覧です。
+* ブラウザは"preloaded HSTS(HTTP Strict Transport Security)"リストを調べます。これはHTTPSでのみリクエストを送るように求めているウェブサイトの一覧です。
 
-もしそのウェブサイトがリストにあれば、ブラウザはHTTPではなくHTTPでリクエストを送ります。
-
-Otherwise, the initial request is sent via HTTP.
-なければ最初のリクエストはHTTPで送られます。
-
-(Note that a website can still use the HSTS policy without being in the HSTS list.
-ウェブサイトは、HSTS一覧になくてもHSTSポリシーを利用可能であることに注意してください。
-
-最初のHTTPリクエストに対するレスポンスは、HTTPSリクエストのみでリクエストを送ることを要求するものです。
-
-しかし、この1回のHTTPリクエストによりユーザはダウングレード攻撃を受ける可能性があります。そのため、現在のWebブラウザにはHSTS一覧が搭載されています。
+* もしそのウェブサイトがリストにあれば、ブラウザはHTTPではなくHTTPでリクエストを送ります。なければ最初のリクエストはHTTPで送られます。ウェブサイトは、HSTS一覧になくてもHSTSポリシーを利用可能であることに注意してください。最初のHTTPリクエストに対するレスポンスは、HTTPSリクエストのみでリクエストを送ることを要求するものです。しかし、この1回のHTTPリクエストによりユーザはダウングレード攻撃を受ける可能性があります。そのため、現在のWebブラウザにはHSTS一覧が搭載されています。
 
 
 DNSルックアップ
+--------------------------
 
 ブラウザは対象のドメインがキャッシュにないか調べます。(ChromeのDNSキャッシュを見たければ、chrome://net-internals/#dnsにアクセスしてください)
 
@@ -168,14 +156,11 @@ gethostbynameがキャッシュに持っていなかったりホストファイ�
 もしDNSサーバが異なるサブネットにあれば、ネットワークライブラリはデフォルトゲートウェイIPに対するARP処理に従います。
 
 ARP処理
+----------------------
 
-ARP(Address Resolution Protocol)ブロードキャストを行うため、ネットワークスタックライブラリは対象のIPアドレスを知る必要があります。
+ARP(Address Resolution Protocol)ブロードキャストを行うため、ネットワークスタックライブラリは対象のIPアドレスを知る必要があります。また、ARPブロードキャストを行うため、MACアドレスを知る必要もあります。
 
-また、ARPブロードキャストを行うため、MACアドレスを知る必要もあります。
-
-ARPキャッシュにARPエントリのターゲットIPがないか調べます。
-
-キャッシュにあれば、ライブラリは次のような結果を返します: Target IP = MAC
+ARPキャッシュにARPエントリのターゲットIPがないか調べます。キャッシュにあれば、ライブラリは次のような結果を返します: Target IP = MAC
 
 もしエントリーがARPキャッシュにない場合
 
@@ -184,9 +169,10 @@ ARPキャッシュにARPエントリのターゲットIPがないか調べます
 * ネットワークライブラリはLayer2(OSIモデルにおけるデータリンク層)にARPリクエストを送ります。
 
 ``ARPリクエスト``::
+
     送信者MAC: interface:mac:address:here
     送信者IP: interface.ip.goes.here
-    ターゲット MAC: FF:FF:FF:FF:FF:FF (Broadcast)
+    ターゲット MAC: FF:FF:FF:FF:FF:FF (ブロードキャスト)
     ターゲット IP: target.ip.goes.here
 
 コンピュータとルータの間にあるハードウェアの種類によって以下のように変化します。
@@ -195,18 +181,18 @@ ARPキャッシュにARPエントリのターゲットIPがないか調べます
 
 * コンピュータがルータと直接接続されている場合、ルータはARPリプライを返します。
 
-ハブの場合
+ハブの場合:
 
 * コンピュータがハブに繋がっている場合、ハブはARPリクエストを他の全てのポートにブロードキャストします。もしルータが同じワイヤに繋がっている場合、ルータはARPリプライを返します。
 
-スイッチの場合
+スイッチの場合:
 
 * コンピュータがスイッチに繋がっている場合、スイッチはローカルのCAM/MACテーブルからどのポートが探しているMACアドレスを持っているのか調べます。もしそのMACアドレスに対するエントリがなければ、他の全てのポートへARPリクエストをブロードキャストします。
 
 * また、もしスイッチのMAC/CAMテーブルにそのMACアドレスがあれば、ARPリクエストをそのポートに送ります。
 * また、もしルータが同じワイヤ上にあれば、ARPリプライを返します。
 
-``ARP Reply``::
+``ARPリプライ``::
 
     送信者MAC: target:mac:address:here
     送信者IP: target.ip.goes.here
@@ -221,13 +207,10 @@ ARPキャッシュにARPエントリのターゲットIPがないか調べます
 ソケットを開く
 -------------------
 
-ブラウザが目標サーバのIPを受け取ると、それとURLから得た適切なポート(HTTPは80, HTTPSは443)を用いてsocketという名前のシステム関数を呼び、TCPソケットストリーム(``AF_INET/AF_INET6`` と
-``SOCK_STREAM``)をリクエストします。
+ブラウザが目標サーバのIPを受け取ると、それとURLから得た適切なポート(HTTPは80, HTTPSは443)を用いて ``socket`` という名前のシステム関数を呼び、TCPソケットストリーム( ``AF_INET/AF_INET6`` と ``SOCK_STREAM`` )をリクエストします。
 
 * このリクエストははじめにTCPセグメントが生成されるトランスポートレイヤに渡されます。標的ポートがヘッダに追加され、ソースポートがカーネルの動的ポート幅(Linuxではip_local_port_range)から選ばれます。
-
 * このセグメントはネットワークレイヤに送られIPヘッダが付与されます。標的サーバおよびクライアントののIPアドレスを利用してパケットが作られます。
-
 * パケットはついでリンクレイヤに到着します。MACアドレスのゲートウェイ(ローカルルータ)およびNICのMacアドレスを含むフレームヘッダが付与されます。前と同じように、もしカーネルがゲートウェイのMACアドレスを知らない場合ARPリクエストを行なって探します。
 
 この時点でパケットは既にeitherを通じてやりとりされています。
@@ -236,17 +219,9 @@ ARPキャッシュにARPエントリのターゲットIPがないか調べます
 * `WiFi`_
 * `Cellular data network`_
 
-For most home or small business Internet connections the packet will pass from
-your computer, possibly through a local network, and then through a modem
-(MOdulator/DEModulator) which converts digital 1's and 0's into an analog
-signal suitable for transmission over telephone, cable, or wireless telephony
-connections. On the other end of the connection is another modem which converts
-the analog signal back into digital data to be processed by the next `network
-node`_ where the from and to addresses would be analyzed further.
+ほとんどの家庭用、あるいは小さなビジネス用のインターネットにおいてパケットはあなたのコンピュータから、場合によってはローカルネットワークを経由して、モデム(MOdulator/DEModulator)を通り、1と0のデジタルな情報を電話やケーブル、その他ワイヤレスな通信に適したアナログな形に変換します。コネクションの反対側では、別のモデムがそのアナログなデータをデジタルなデータに変換し、次の `network node`_ に渡されます。 ネットワークノードでは送信者および受信者のアドレスがより詳細に解析されます。
 
-ほとんどの家庭用、あるいは小さなビジネス用のインターネットにおいてパケットはあなたのコンピュータから、場合によってはローカルネットワークを経由して、モデム(MOdulator/DEModulator)を通り、1と0のデジタルな情報を電話やケーブル、その他ワイヤレスな通信に適したアナログな形に変換します。コネクションの反対側では、別のモデムがそのアナログなデータをデジタルなデータに変換し、次の`network node`に渡されます。ネットワークノードでは送信者および受信者のアドレスがより詳細に解析されます。
-
-また大きな会社のほとんど、また新しい住宅のいくつかはファイバーかEthernetに直接つながっており、この場合データはデジタルのまま直接次の`network node`へと渡されます。
+また大きな会社のほとんど、また新しい住宅のいくつかはファイバーかEthernetに直接つながっており、この場合データはデジタルのまま直接次の `network node`_ へと渡されます。
 
 
 そしてパケットはローカルサブネットを管理するルーターにたどり着きます。ここから、AS(autonomous system's)ボーダールーターや他のASに行き、最終的に標的のサーバにたどり着きます。移動経路上にあった各ルータはIPヘッダから標的サーバのアドレスを読み取り、適切な次のルータへと導きます。IPヘッダのTTL(time to live)フィールドはルータを1つ経るごとに1減ります。パケットはTTLが0に到達するか現在のルータのキューにスペースがないと、破棄されます。
@@ -257,13 +232,9 @@ node`_ where the from and to addresses would be analyzed further.
 * クライアントはISN(initial sequence number : 初期連番番号)を決め、SYNビットをセットしてISNを設定しようとしていることを表しつつパケットをサーバに送ります。
 
 * サーバはSYNを受け取ります。もし受け取り可能な場合、
-   * Server chooses its own initial sequence number
    * サーバは自身でISNを決めます。
-   * Server sets SYN to indicate it is choosing its ISN
    * サーバはISNを選択しようとしていることを伝えるため、SYNをセットします。
-   * Server copies the (client ISN +1) to its ACK field and adds the ACK flag to indicate it is acknowledging receipt of the first packet
    * サーバはクライアントのISN+1の値を計算し、ACKフィールドに設定します。またACKフラグを設定して最初のパケットのリクエストを承認します。
-* Client acknowledges the connection by sending a packet:
 * クライアントは以下のようなパケットを送ることでコネクションを承認します。
    * 自身のシーケンス番号を増やす
    * 受信者側のACK番号を増やす
