@@ -209,7 +209,6 @@ ARPキャッシュにARPエントリのターゲットIPがないか調べます
 TLSハンドシェイク
 --------------------------
 
-* The client computer sends a ``ClientHello`` message to the server with its Transport Layer Security (TLS) version, list of cipher algorithms and compression methods available.
 * クライアントがClientHelloメッセージをTLSバージョン、可能な暗号化アルゴリズムおよび圧縮方法のリストと共にサーバに送ります。
 * サーバはTLSのバージョン、選択した暗号化アルゴリズムおよび圧縮方法、CA(Certificate Authorityより署名された)サーバーの公開証明書と共に、ServerHelloメッセージでレスポンスを返します。
 * クライアントはサーバの電子証明書を、信用しているCAのリストに照会します。サーバのCAが信用できるとなった場合、クライアントは擬似ランダムな文字列を生成してこれをサーバの公開鍵で暗号化します。このランダムな文字列は共通鍵として利用されます。
